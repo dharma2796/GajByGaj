@@ -15,6 +15,15 @@ class UserVerification
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if (\Auth::user()->licence == "1" && \Auth::user()->permission == 1)
+        {
+            return $next($request);
+        }
+        elseif(\Auth::user()->permission == 0){
+            \Auth::logout();
+            \Session::flush();
+            return redirect()->back()->with('warning',"Your Account has been blocked");
+        }
+        return redirect()->back();
     }
 }

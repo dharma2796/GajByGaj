@@ -15,6 +15,15 @@ class AdminVerification
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if (\Auth::user()->licence == "3" && \Auth::user()->permission == 1)
+        {
+            return $next($request);
+        }
+        elseif(\Auth::user()->applock == 0){
+            \Auth::logout();
+            \Session::flush();
+            return redirect()->back()->with('warning',"Your Account has been blocked");
+        }
+        return redirect()->back();
     }
 }
