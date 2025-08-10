@@ -41,4 +41,21 @@ class User extends Authenticatable
     public function userDetails(){
         return $this->hasOne('\App\UserDetails','userid','id')->get();
     }
+
+    public function maskedEmail(){
+        
+        $em   = explode("@",$this->email);
+        $name = implode('@', array_slice($em, 0, count($em)-1));
+        $len  = floor(strlen($name)/2);
+
+        return substr($name,0, $len) . str_repeat('*', $len) . "@" . end($em);
+    }
+
+    public function maskedContact(){
+        $length=strlen($this->contact);
+        $frontlength=substr($this->contact,$length-10);
+        return  substr($this->contact,0, $length-strlen($frontlength)).substr($this->contact,$length-strlen($frontlength), 2) . str_repeat('*', strlen($frontlength)-5) . substr($this->contact,$length-3, $length);
+    }
+
+
 }
