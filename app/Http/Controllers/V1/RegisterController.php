@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Mail;
 use App\User;
 //use App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\V1\BaseController;
 
 class RegisterController extends BaseController
@@ -49,6 +50,7 @@ class RegisterController extends BaseController
             'ccode' => $data['countrycode'],
             'gender'    => $data['gender'],
             'password' => Hash::make($data['password']),
+            's_password' => Crypt::encrypt($data['password']),
             'doj'       => date("Y-m-d"),
             'created_at'  => now(),
             'uuid' => $uidd,
@@ -59,12 +61,12 @@ class RegisterController extends BaseController
                 'sponsorid' => is_object($guiderid)?$guiderid->id:$guiderid
             ]);
         $token = Str::random(64);
-        $userVerification=\App\UserVerification::create([
+       /* $userVerification=\App\UserVerification::create([
             'userid'  =>  $user->id,
             'token'  =>  $token,
             'purpose'  =>  'verification',
             'created_at'  =>  now(),
-        ]);
+        ]);*/
         
         $details['id']=$user->email;
         $details['password']=$data['password'];
@@ -83,7 +85,7 @@ class RegisterController extends BaseController
         finally{
             $success['token'] =  $user->createToken('GBGApp')->accessToken;
             $success['name'] =  $user->name;
-            $details=array('email' => $user->email, 'userid' => $uidd, 'password'=>$data['password'] ,);
+            $details=array('email' => $user->email,/* 'userid' => $uidd,*/ 'password'=>$data['password'] ,);
             return $this->sendResponse($details, 'User register successfully.');
         }
     }
